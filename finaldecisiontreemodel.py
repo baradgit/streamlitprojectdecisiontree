@@ -58,11 +58,12 @@ if uploaded_file is not None:
     }
 
     if st.sidebar.button('Run GridSearchCV'):
+        st.subheader('It will take about 1 minute')
         reg = DecisionTreeRegressor(random_state=42)
         grid_search = GridSearchCV(estimator=reg, param_grid=param_grid, cv=5)
         grid_search.fit(X_train, y_train)
         best_params = grid_search.best_params_
-        st.write(f'Best parameters: {best_params}')
+        st.subheader(f'Best parameters: {best_params}')
 
     if st.sidebar.button('Run Algorithm'):
         reg = DecisionTreeRegressor(
