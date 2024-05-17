@@ -39,7 +39,7 @@ if uploaded_file is not None:
     else:
         st.subheader('')
         st.write('')
-
+    st.subheader('Removed outliers - rows and columns')
     X = data.iloc[:, :-1]
     y = data.iloc[:, -1]
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
