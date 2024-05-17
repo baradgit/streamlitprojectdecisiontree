@@ -28,8 +28,7 @@ if uploaded_file is not None:
     st.subheader('Rows and columns')
     st.write(data.shape)
 
-    if st.button('Remove Outliers'):
-        remove_outliers = True
+    
 
     if remove_outliers:
         Q1 = data.quantile(0.25)
@@ -37,14 +36,12 @@ if uploaded_file is not None:
         IQR = Q3 - Q1
         data = data[~((data < (Q1 - 1.5 * IQR)) | (data > (Q3 + 1.5 * IQR))).any(axis=1)]
         st.subheader('Removed outliers - rows and columns')
-        st.write(data.shape)
     else:
-        st.subheader('Original data - rows and columns')
-        st.write(data.shape)
+        st.subheader('')
+        st.write('')
 
     X = data.iloc[:, :-1]
     y = data.iloc[:, -1]
-    st.write(X.shape, y.shape)
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
 
     # Hyperparameters
