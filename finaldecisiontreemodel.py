@@ -47,6 +47,20 @@ if uploaded_file is not None:
     st.write(X.shape, y.shape)
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
     
+    # Hyperparameters
+    splitter = st.sidebar.selectbox('Splitter', ('best', 'random'))
+    max_depth = int(st.sidebar.number_input('Max Depth'))
+    min_samples_split = st.sidebar.slider('Min Samples Split',min_value= 1,max_value= X_train.shape[0],step= 2,key=1234)
+    min_samples_leaf = st.sidebar.slider('Min Samples Leaf', 1, X_train.shape[0], 1,key=1235)
+    max_features = st.sidebar.slider('Max Features', 1, X_train.shape[1], X_train.shape[1],key=1236)
+    max_leaf_nodes = int(st.sidebar.number_input('Max Leaf Nodes'))
+
+    if max_depth == 0:
+        max_depth = None
+
+    if max_leaf_nodes == 0:
+        max_leaf_nodes = None
+
     param_grid = {
         'splitter': ['best', 'random'],
         'max_depth': [None, 3,5, 7, 10, 15, 20],
