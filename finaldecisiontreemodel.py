@@ -25,7 +25,7 @@ remove_outliers = False
 
 if uploaded_file is not None:
     data = pd.read_csv(uploaded_file)
-    st.subheader('Rows and columns')
+    st.subheader('Orginal Rows and columns')
     st.write(data.shape)
 
     
@@ -35,14 +35,13 @@ if uploaded_file is not None:
         Q3 = data.quantile(0.75)
         IQR = Q3 - Q1
         data = data[~((data < (Q1 - 1.5 * IQR)) | (data > (Q3 + 1.5 * IQR))).any(axis=1)]
-        st.subheader('Removed-outliers')
-        st.write(data.shape)
-  
+        
+        
+    st.subheader('removed outliers')
     X = data.iloc[:, :-1]
     y = data.iloc[:, -1]
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
-    st.subheader('datashape')
-    st.write(data.shape)
+    
     # Hyperparameters
     splitter = st.sidebar.selectbox('Splitter', ('best', 'random'))
     max_depth = st.sidebar.number_input('Max Depth', min_value=1, value=5)
