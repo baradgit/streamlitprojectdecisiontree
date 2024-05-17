@@ -25,15 +25,16 @@ if uploaded_file is not None:
     data = pd.read_csv(uploaded_file)
     st.subheader('Rows and columns')
     st.write(data.shape)
-
     remove_outliers = st.button('Remove Outliers')
-  
     if remove_outliers:
         Q1 = data.quantile(0.25)
         Q3 = data.quantile(0.75)
         IQR = Q3 - Q1
         data = data[~((data < (Q1 - 1.5 * IQR)) | (data > (Q3 + 1.5 * IQR))).any(axis=1)]
         st.subheader('Removed outliers - rows and columns')
+        st.write(data.shape)
+    else:
+        st.subheader('Original data - rows and columns')
         st.write(data.shape)
 
     X = data.iloc[:, :-1]
