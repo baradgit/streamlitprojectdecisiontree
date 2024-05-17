@@ -77,7 +77,15 @@ if uploaded_file is not None:
         st.write(f'Best parameters: {best_params}')
 
     if st.sidebar.button('Run Algorithm'):
-        reg = DecisionTreeRegressor(random_state=42)
+        reg = DecisionTreeRegressor(
+            splitter=splitter,
+            max_depth=max_depth if max_depth > 0 else None,
+            min_samples_split=min_samples_split,
+            min_samples_leaf=min_samples_leaf,
+            max_features=max_features,
+            max_leaf_nodes=max_leaf_nodes if max_leaf_nodes > 0 else None,
+            random_state=42
+        )
         reg.fit(X_train, y_train)
         a = X_train.shape
         st.subheader(f'X_train shape: {a}')
