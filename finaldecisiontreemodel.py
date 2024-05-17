@@ -35,15 +35,13 @@ if uploaded_file is not None:
         Q3 = data.quantile(0.75)
         IQR = Q3 - Q1
         data = data[~((data < (Q1 - 1.5 * IQR)) | (data > (Q3 + 1.5 * IQR))).any(axis=1)]
-        st.subheader('Removed outliers - rows and columns')
-    else:
-        st.subheader('')
-        st.write('')
-    st.subheader('Removed outliers - rows and columns')
+        st.subheader('Removed-outliers')
+        st.write(data.shape)
+  
     X = data.iloc[:, :-1]
     y = data.iloc[:, -1]
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
-
+    st.write(data.shape)
     # Hyperparameters
     splitter = st.sidebar.selectbox('Splitter', ('best', 'random'))
     max_depth = st.sidebar.number_input('Max Depth', min_value=1, value=5)
