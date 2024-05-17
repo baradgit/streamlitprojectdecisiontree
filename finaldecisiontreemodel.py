@@ -7,12 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.tree import plot_tree
-from sklearn.tree import export_graphviz
-from os import system
-from graphviz import Source
-from sklearn import tree
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV,KFold
-from sklearn.tree import DecisionTreeRegressor
+from sklearn.model_selection import GridSearchCV
 import pickle
 
 def create_download_link(filename):
@@ -31,10 +26,9 @@ if uploaded_file is not None:
     st.subheader('Rows and columns')
     st.write(data.shape)
 
-    remove_outliers = st.button('remove_outliers')
+    remove_outliers = st.button('Remove Outliers')
   
     if remove_outliers:
-       
         Q1 = data.quantile(0.25)
         Q3 = data.quantile(0.75)
         IQR = Q3 - Q1
@@ -46,27 +40,21 @@ if uploaded_file is not None:
     y = data.iloc[:, -1]
     st.write(X.shape, y.shape)
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
-    
+
     # Hyperparameters
     splitter = st.sidebar.selectbox('Splitter', ('best', 'random'))
-    max_depth = int(st.sidebar.number_input('Max Depth'))
-    min_samples_split = st.sidebar.slider('Min Samples Split',min_value= 1,max_value= X_train.shape[0],step= 2,key=1234)
-    min_samples_leaf = st.sidebar.slider('Min Samples Leaf', 1, X_train.shape[0], 1,key=1235)
-    max_features = st.sidebar.slider('Max Features', 1, X_train.shape[1], X_train.shape[1],key=1236)
-    max_leaf_nodes = int(st.sidebar.number_input('Max Leaf Nodes'))
-
-    if max_depth == 0:
-        max_depth = None
-
-    if max_leaf_nodes == 0:
-        max_leaf_nodes = None
+    max_depth = st.sidebar.number_input('Max Depth', min_value=1, value=5)
+    min_samples_split = st.sidebar.slider('Min Samples Split', min_value=2, max_value=X_train.shape[0], value=2, step=1)
+    min_samples_leaf = st.sidebar.slider('Min Samples Leaf', min_value=1, max_value=X_train.shape[0], value=1, step=1)
+    max_features = st.sidebar.slider('Max Features', min_value=1, max_value=X_train.shape[1], value=X_train.shape[1], step=1)
+    max_leaf_nodes = st.sidebar.number_input('Max Leaf Nodes', min_value=0, value=0, step=1)
 
     param_grid = {
         'splitter': ['best', 'random'],
-        'max_depth': [None, 3,5, 7, 10, 15, 20],
-        'min_samples_split': [250, 450, 650, 850, 1000,1250,1500],
-        'min_samples_leaf': [200, 400, 600, 800, 1000,1250,1500],  
-        'max_leaf_nodes' : [None, 3,5, 7, 10, 15, 20]      
+        'max_depth': [None, 3, 5, 7, 10, 15, 20],
+        'min_samples_split': [2, 10, 20, 50, 100],
+        'min_samples_leaf': [1, 5, 10, 20, 50],
+        'max_leaf_nodes': [None, 3, 5, 10, 20, 30]
     }
 
     if st.sidebar.button('Run GridSearchCV'):
@@ -87,14 +75,12 @@ if uploaded_file is not None:
             random_state=42
         )
         reg.fit(X_train, y_train)
-        a = X_train.shape
-        st.subheader(f'X_train shape: {a}')
         y_train_pred = reg.predict(X_train)
         mse = mean_squared_error(y_train, y_train_pred)
         st.write(f'Training MSE: {mse}')
 
         fig, ax = plt.subplots(figsize=(15, 10))
-        tree.plot_tree(reg, filled=True, ax=ax, feature_names=X.columns)
+        plot_tree(reg, filled=True, ax=ax, feature_names=X.columns)
         st.pyplot(fig)
 
         with open('model.pkl', 'wb') as f:
