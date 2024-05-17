@@ -41,6 +41,7 @@ if uploaded_file is not None:
     X = data.iloc[:, :-1]
     y = data.iloc[:, -1]
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+    st.subheader('datashape')
     st.write(data.shape)
     # Hyperparameters
     splitter = st.sidebar.selectbox('Splitter', ('best', 'random'))
