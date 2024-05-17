@@ -23,27 +23,20 @@ uploaded_file = st.file_uploader("Choose a file")
 
 if uploaded_file is not None:
     data = pd.read_csv(uploaded_file)
-    data1 = data
     st.subheader('Rows and columns')
     st.write(data.shape)
-    remove_outliers = st.button('Remove Outliers')
-    if remove_outliers:
-        Q1 = data.quantile(0.25)
-        Q3 = data.quantile(0.75)
-        IQR = Q3 - Q1
-        data = data[~((data < (Q1 - 1.5 * IQR)) | (data > (Q3 + 1.5 * IQR))).any(axis=1)]
-        X = data.iloc[:, :-1]
-        y = data.iloc[:, -1]
-        st.write(X.shape, y.shape)
-        X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
-        
-    else:
-        X = data1.iloc[:, :-1]
-        y = data1.iloc[:, -1]
-        st.write(X.shape, y.shape)
-        X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
-
     
+    Q1 = data.quantile(0.25)
+    Q3 = data.quantile(0.75)
+    IQR = Q3 - Q1
+    data1 = data[~((data < (Q1 - 1.5 * IQR)) | (data > (Q3 + 1.5 * IQR))).any(axis=1)]
+    st.subheader('Removed outliers - rows and columns')
+    st.write(data1.shape)
+
+    X = data1.iloc[:, :-1]
+    y = data1.iloc[:, -1]
+    st.write(X.shape, y.shape)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
 
     # Hyperparameters
     splitter = st.sidebar.selectbox('Splitter', ('best', 'random'))
