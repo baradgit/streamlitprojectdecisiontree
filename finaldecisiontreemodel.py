@@ -101,3 +101,4 @@ if uploaded_file is not None:
 
       
         st.markdown(create_download_link('test_data.csv'), unsafe_allow_html=True)
+        st.success("Training Successfully Completed, Now You Can Go Back & Test the Model Using These Downloaded files")
