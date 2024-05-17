@@ -47,8 +47,8 @@ if uploaded_file is not None:
     y = data.iloc[:, -1]
     st.write(X.shape, y.shape)
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
-    a = X_train.shape
-    st.subheader(f'X_train shape: {a}')
+    
+    
     plt.style.use('fivethirtyeight')
 
     st.sidebar.markdown("# Decision Tree Regressor")
@@ -77,7 +77,8 @@ if uploaded_file is not None:
     if st.sidebar.button('Run Algorithm'):
         reg = DecisionTreeRegressor(splitter=splitter,max_depth=max_depth,random_state=42,min_samples_split=min_samples_split,min_samples_leaf=min_samples_leaf,max_features=max_features,max_leaf_nodes=max_leaf_nodes)
         reg.fit(X_train, y_train)
-
+        a = X_train.shape
+        st.subheader(f'X_train shape: {a}')
         y_train_pred = reg.predict(X_train)
         mse = mean_squared_error(y_train, y_train_pred)
         st.write(f'Training MSE: {mse}')
