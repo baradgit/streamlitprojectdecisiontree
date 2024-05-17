@@ -15,7 +15,6 @@ from sklearn.model_selection import GridSearchCV, RandomizedSearchCV,KFold
 from sklearn.tree import DecisionTreeRegressor
 import pickle
 
-
 def create_download_link(filename):
     with open(filename, 'rb') as f:
         data = f.read()
@@ -32,8 +31,9 @@ if uploaded_file is not None:
     st.subheader('Rows and columns')
     st.write(data.shape)
 
+    remove_outliers = st.button('remove_outliers')
   
-    if st.button('remove_outliers'):
+    if remove_outliers:
        
         Q1 = data.quantile(0.25)
         Q3 = data.quantile(0.75)
@@ -42,40 +42,28 @@ if uploaded_file is not None:
         st.subheader('Removed outliers - rows and columns')
         st.write(data.shape)
 
- 
     X = data.iloc[:, :-1]
     y = data.iloc[:, -1]
     st.write(X.shape, y.shape)
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
     
-    
-    plt.style.use('fivethirtyeight')
+    param_grid = {
+        'splitter': ['best', 'random'],
+        'max_depth': [None, 3,5, 7, 10, 15, 20],
+        'min_samples_split': [250, 450, 650, 850, 1000,1250,1500],
+        'min_samples_leaf': [200, 400, 600, 800, 1000,1250,1500],  
+        'max_leaf_nodes' : [None, 3,5, 7, 10, 15, 20]      
+    }
 
-    st.sidebar.markdown("# Decision Tree Regressor")
-
-    splitter = st.sidebar.selectbox(
-        'Splitter',
-        ('best', 'random')
-    )
-
-    max_depth = int(st.sidebar.number_input('Max Depth'))
-
-    min_samples_split = st.sidebar.slider('Min Samples Split',min_value= 1,max_value= X_train.shape[0],step= 2,key=1234)
-
-    min_samples_leaf = st.sidebar.slider('Min Samples Leaf', 1, X_train.shape[0], 1,key=1235)
-
-    max_features = st.sidebar.slider('Max Features', 1, X_train.shape[1], X_train.shape[1],key=1236)
-
-    max_leaf_nodes = int(st.sidebar.number_input('Max Leaf Nodes'))
-
-    if max_depth == 0:
-        max_depth = None
-
-    if max_leaf_nodes == 0:
-        max_leaf_nodes = None
+    if st.sidebar.button('Run GridSearchCV'):
+        reg = DecisionTreeRegressor(random_state=42)
+        grid_search = GridSearchCV(estimator=reg, param_grid=param_grid, cv=5)
+        grid_search.fit(X_train, y_train)
+        best_params = grid_search.best_params_
+        st.write(f'Best parameters: {best_params}')
 
     if st.sidebar.button('Run Algorithm'):
-        reg = DecisionTreeRegressor(splitter=splitter,max_depth=max_depth,random_state=42,min_samples_split=min_samples_split,min_samples_leaf=min_samples_leaf,max_features=max_features,max_leaf_nodes=max_leaf_nodes)
+        reg = DecisionTreeRegressor(random_state=42)
         reg.fit(X_train, y_train)
         a = X_train.shape
         st.subheader(f'X_train shape: {a}')
@@ -83,12 +71,10 @@ if uploaded_file is not None:
         mse = mean_squared_error(y_train, y_train_pred)
         st.write(f'Training MSE: {mse}')
 
-     
         fig, ax = plt.subplots(figsize=(15, 10))
         tree.plot_tree(reg, filled=True, ax=ax, feature_names=X.columns)
         st.pyplot(fig)
 
-      
         with open('model.pkl', 'wb') as f:
             pickle.dump(reg, f)
 
@@ -96,10 +82,6 @@ if uploaded_file is not None:
         st.markdown(create_download_link('model.pkl'), unsafe_allow_html=True)
 
         test_data = pd.concat([X_test, y_test], axis=1)
-
-      
         test_data.to_csv('test_data.csv', index=False)
-
-      
         st.markdown(create_download_link('test_data.csv'), unsafe_allow_html=True)
         st.success("Training Successfully Completed, Now You Can Go Back & Test the Model Using These Downloaded files")
